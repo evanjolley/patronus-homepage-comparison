@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patronus — Original / Revised</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23181818'/%3E%3Cpath d='M9 24V8h8a6 6 0 0 1 0 12H9' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#181818;color:#eee;font-family:Arial,sans-serif}
+.toolbar{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 24px;background:#111;border-bottom:1px solid #333}
+.identity{display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap}.identity strong{font-size:16px;letter-spacing:-.4px}.identity span{color:#999}
+.tabs{display:flex;padding:4px;border:1px solid #3d3d3d;border-radius:9px;background:#1b1b1b;gap:4px}
+button{font:inherit;font-size:14px;cursor:pointer;border:0;background:transparent;color:#aaa;padding:9px 22px;border-radius:5px}button[aria-pressed=true]{background:#eee;color:#181818}button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid #ddd;outline-offset:3px}
+.tools{display:flex;gap:20px;align-items:center}select{font:inherit;font-size:14px;border:1px solid #444;padding:8px;background:#202020;color:#ddd;border-radius:5px;max-width:180px}.tools a{font-size:14px;color:#ccc;text-decoration:none;white-space:nowrap}
+.stage{height:calc(100dvh - 64px);position:relative}.stage iframe{width:100%;height:100%;border:0;position:absolute;inset:0;background:#181818}.stage iframe.hidden{visibility:hidden;pointer-events:none}
+@media(max-width:760px){.toolbar{padding:0 12px;gap:8px;height:104px;flex-wrap:wrap;justify-content:center}.identity{display:none}.tools{gap:14px}.stage{height:calc(100dvh - 104px)}button{padding:8px 25px}}
+</style>
+</head>
+<body>
+<header class="toolbar">
+ <div class="identity"><strong>Patronus</strong><span>Homepage comparison</span></div>
+ <div class="tabs" role="group" aria-label="Page version">
+  <button type="button" data-version="original" aria-pressed="false">Original</button>
+  <button type="button" data-version="revised" aria-pressed="true">Revised</button>
+ </div>
+ <div class="tools">
+  <select aria-label="Jump to section" id="section"><option value="hero">Hero</option><option value="research">Research direction</option><option value="metrics">Metrics</option><option value="domains">Simulation domains</option><option value="capabilities">Capabilities</option><option value="papers">Featured research</option><option value="footer">Footer</option></select>
+  <a href="https://patronus.ai/" target="_blank" rel="noopener noreferrer">Open live site</a>
+ </div>
+</header>
+<main class="stage">
+ <iframe id="original" class="hidden" src="original.html" title="Original homepage — snapshot of October 2, 2026" aria-hidden="true" tabindex="-1"></iframe>
+ <iframe id="revised" src="revised.html" title="Revised homepage"></iframe>
+</main>
+<script>
+const frames={original:document.getElementById('original'),revised:document.getElementById('revised')};
+let active='revised';
+const sectionControl=document.getElementById('section');
+function landmarks(frame){return [...frame.contentDocument.querySelectorAll('[data-compare-section]')];}
+function position(frame){
+ const y=frame.contentWindow.scrollY;
+ const items=landmarks(frame);
+ let index=0;
+ for(let i=0;i<items.length;i++)if(items[i].getBoundingClientRect().top<=120)index=i;
+ const node=items[index];if(!node)return {key:'hero',fraction:0};
+ const start=node.getBoundingClientRect().top+y;
+ const end=items[index+1]?items[index+1].getBoundingClientRect().top+y:frame.contentDocument.documentElement.scrollHeight;
+ return {key:node.dataset.compareSection,fraction:(y-start)/Math.max(end-start,1)};
+}
+function align(frame,pos){
+ const items=landmarks(frame);let i=items.findIndex(n=>n.dataset.compareSection===pos.key);if(i<0){i=items.findIndex(n=>n.dataset.compareSection==='metrics');pos={fraction:0};}const node=items[i];if(!node)return;
+ const win=frame.contentWindow,start=node.getBoundingClientRect().top+win.scrollY;
+ const end=items[i+1]?items[i+1].getBoundingClientRect().top+win.scrollY:frame.contentDocument.documentElement.scrollHeight;
+ win.scrollTo({top:Math.max(0,start+pos.fraction*(end-start)-(pos.inset||0)),behavior:'instant'});
+}
+function choose(version){
+ if(version===active)return;
+ const pos=position(frames[active]);active=version;
+ Object.entries(frames).forEach(([name,frame])=>{
+  const on=name===active;frame.classList.toggle('hidden',!on);frame.setAttribute('aria-hidden',String(!on));frame.tabIndex=on?0:-1;
+  frame.contentWindow.postMessage({type:'compare-active',active:on},location.origin);
+ });
+ align(frames[active],pos);
+ document.querySelectorAll('[data-version]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.version===active)));
+}
+document.querySelectorAll('[data-version]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.version)));
+sectionControl.addEventListener('change',()=>align(frames[active],{key:sectionControl.value,fraction:0,inset:sectionControl.value==='hero'?0:(active==='original'?150:110)}));
+Object.entries(frames).forEach(([name,frame])=>frame.addEventListener('load',()=>{
+ frame.contentWindow.postMessage({type:'compare-active',active:name===active},location.origin);
+ let pending=false;
+ frame.contentWindow.addEventListener('scroll',()=>{
+  if(name!==active||pending)return;pending=true;
+  requestAnimationFrame(()=>{const key=position(frame).key;if(key!=='world-model')sectionControl.value=key;pending=false;});
+ },{passive:true});
+}));
+</script>
+</body>
+</html>
