@@ -47,7 +47,7 @@ function position(frame){
  return {key:node.dataset.compareSection,fraction:(y-start)/Math.max(end-start,1)};
 }
 function align(frame,pos){
- const items=landmarks(frame);let i=items.findIndex(n=>n.dataset.compareSection===pos.key);if(i<0){i=items.findIndex(n=>n.dataset.compareSection==='metrics');pos={fraction:0};}const node=items[i];if(!node)return;
+ const items=landmarks(frame);let i=items.findIndex(n=>n.dataset.compareSection===pos.key);if(i<0){for(const k of ['metrics','domains']){i=items.findIndex(n=>n.dataset.compareSection===k);if(i>=0)break;}pos={fraction:0};}const node=items[i];if(!node)return;
  const win=frame.contentWindow,start=node.getBoundingClientRect().top+win.scrollY;
  const end=items[i+1]?items[i+1].getBoundingClientRect().top+win.scrollY:frame.contentDocument.documentElement.scrollHeight;
  win.scrollTo({top:Math.max(0,start+pos.fraction*(end-start)-(pos.inset||0)),behavior:'instant'});
