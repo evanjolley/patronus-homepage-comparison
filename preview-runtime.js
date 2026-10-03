@@ -21,7 +21,7 @@
       card.addEventListener('focusin',update);card.addEventListener('focusout',()=>requestAnimationFrame(update));
     });
   }
-  new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))init()},{threshold:.05}).observe(root);
+  if(root)new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting))init()},{threshold:.05}).observe(root);
   window.addEventListener('message',e=>{
     if(e.source!==parent || e.origin!==location.origin)return;
     if(e.data?.type==='compare-active'){

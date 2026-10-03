@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Patronus Research — Original / Revised</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23181818'/%3E%3Cpath d='M9 24V8h8a6 6 0 0 1 0 12H9' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#181818;color:#eee;font-family:Arial,sans-serif}
+.toolbar{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 24px;background:#111;border-bottom:1px solid #333}
+.identity{display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap}.identity strong{font-size:16px;letter-spacing:-.4px}.identity span{color:#999}
+.tabs{display:flex;padding:4px;border:1px solid #3d3d3d;border-radius:9px;background:#1b1b1b;gap:4px}
+button{font:inherit;font-size:14px;cursor:pointer;border:0;background:transparent;color:#aaa;padding:9px 22px;border-radius:5px}button[aria-pressed=true]{background:#eee;color:#181818}button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid #ddd;outline-offset:3px}
+.tools{display:flex;gap:20px;align-items:center}select{font:inherit;font-size:14px;border:1px solid #444;padding:8px;background:#202020;color:#ddd;border-radius:5px;max-width:180px}.tools a{font-size:14px;color:#ccc;text-decoration:none;white-space:nowrap}
+.stage{height:calc(100dvh - 64px);position:relative}.stage iframe{width:100%;height:100%;border:0;position:absolute;inset:0;background:#181818}.stage iframe.hidden{visibility:hidden;pointer-events:none}
+@media(max-width:760px){.toolbar{padding:0 12px;gap:8px;height:104px;flex-wrap:wrap;justify-content:center}.identity{display:none}.tools{gap:14px}.stage{height:calc(100dvh - 104px)}button{padding:8px 25px}}
+</style>
+</head>
+<body>
+<header class="toolbar">
+ <div class="identity"><strong>Patronus</strong><span>Research comparison</span></div>
+ <div class="tabs" role="group" aria-label="Page version">
+  <button type="button" data-version="original" aria-pressed="false">Original</button>
+  <button type="button" data-version="revised" aria-pressed="true">Revised</button>
+ </div>
+ <div class="tools">
+  <select aria-label="Jump to section" id="section"><option value="hero">Hero</option><option value="papers">Featured research</option><option value="cta">Let’s collaborate</option><option value="footer">Footer</option></select>
+  <a href="https://patronus.ai/research" target="_blank" rel="noopener noreferrer">Open live site</a>
+ </div>
+</header>
+<main class="stage">
+ <iframe id="original" class="hidden" src="../research-original.html" title="Original research page — snapshot of October 2, 2026" aria-hidden="true" tabindex="-1"></iframe>
+ <iframe id="revised" src="../research-revised.html" title="Revised research page"></iframe>
+</main>
+<script>window.COMPARE={"order": ["hero", "who", "foundational", "papers", "focus", "updates", "cta", "footer"]};</script>
+<script src="../compare-shell.js"></script>
+</body>
+</html>
